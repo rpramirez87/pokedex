@@ -9,6 +9,8 @@
 import UIKit
 import AVFoundation
 
+
+
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout,UISearchBarDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
@@ -38,7 +40,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             musicPlayer = try AVAudioPlayer(contentsOfURL: NSURL(string: path)!)
             musicPlayer.prepareToPlay()
             musicPlayer.numberOfLoops = -1
-            musicPlayer.play()
+            //musicPlayer.play()
         } catch let err as NSError{
             print(err.debugDescription)
         }
@@ -56,7 +58,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             for row in rows{
                 let pokeId = Int(row["id"]!)!
                 let pokeName = row["identifier"]!
-                print("\(pokeId) -  \(pokeName.capitalizedString)")
+                //print("\(pokeId) -  \(pokeName.capitalizedString)")
                 
                 let tempPokemon = Pokemon(name: pokeName, pokedexId: pokeId)
                 pokemonArray.append(tempPokemon)
@@ -143,8 +145,8 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             if let detailsVC = segue.destinationViewController as? PokemonDetailVC{
                 if let poke = sender as? Pokemon{
                     detailsVC.pokemon = poke
+                    print(poke.pokemonResourceURL)
                 }
-                
             }
         }
     }

@@ -40,5 +40,12 @@
 	<array>
 		<string>pokemon.tff</string>
 	</array>
+	<key>ITSEncryptionExportComplianceCode</key>
+	<string></string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

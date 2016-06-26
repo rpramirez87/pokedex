@@ -31,8 +31,15 @@ class PokemonDetailVC: UIViewController {
         pokemonNameLbl.text = pokemon.name.capitalizedString
         pokemonImg.image = UIImage(named: "\(pokemon.pokedexId)")
         pokedexIDLbl.text = "\(pokemon.pokedexId)"
+        
         pokemonCurrentEvol.image = UIImage(named: "\(pokemon.pokedexId)")
         pokemonNextEvol.image = UIImage(named: "\(pokemon.pokedexId + 1)")
+        
+        
+        pokemon.downloadPokemonDetails { () -> () in
+            //This will be called after download is done.
+             
+        }
     }
     @IBAction func backButton(sender: AnyObject) {
         dismissViewControllerAnimated(true, completion: nil)
