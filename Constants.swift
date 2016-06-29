@@ -10,6 +10,6 @@ import Foundation
 
 //If variables aren't inside of a class, they are globally accessible
 let URL_BASE = "http://pokeapi.co"
-let URL_POKEMON = "/api/v2/pokemon/"
+let URL_POKEMON = "/api/v1/pokemon/"
 
 typealias DownloadComplete = () -> ()

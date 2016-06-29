@@ -19,9 +19,14 @@ class Pokemon {
     private var _weight : String!
     private var _attack : String!
     private var _nextEvolutionTxt : String!
+    private var _nextEvolutionID : String!
+    private var _nextEvolutionLVL : String!
     private var _pokemonResourceURL : String!
     
     var name: String {
+        if _name == nil{
+            _name = ""
+        }
         return _name
     }
     
@@ -29,8 +34,67 @@ class Pokemon {
         return _pokedexId
     }
     
-    var pokemonResourceURL : String{
-        return _pokemonResourceURL
+    var description : String {
+        if _description == nil{
+            _description = ""
+        }
+        return _description
+    }
+    
+    var type : String {
+        if _type == nil{
+            _type = ""
+        }
+        return _type
+    }
+    
+    var defense : String {
+        if _defense == nil{
+            _defense = ""
+        }
+        return _defense
+    }
+    
+    var height : String {
+        if _height == nil{
+            _height = ""
+        }
+        return _height
+    }
+    
+    var weight : String {
+        if _weight == nil{
+            _weight = ""
+        }
+        return _weight
+    }
+    
+    var attack : String {
+        if _attack == nil{
+            _attack = ""
+        }
+        return _attack
+    }
+    
+    var nextEvolutionTxt : String {
+        if _nextEvolutionTxt == nil{
+            _nextEvolutionTxt = ""
+        }
+        return _nextEvolutionTxt
+    }
+    
+    var nextEvolutionLVL : String {
+        if _nextEvolutionLVL == nil{
+            _nextEvolutionLVL = ""
+        }
+        return _nextEvolutionLVL
+    }
+    
+    var nextEvolutionID : String {
+        if _nextEvolutionID == nil{
+            _nextEvolutionID = ""
+        }
+        return _nextEvolutionID
     }
     
     init(name: String, pokedexId: Int) {
@@ -44,91 +108,100 @@ class Pokemon {
         Alamofire.request(.GET, url).responseJSON { response in
             let result = response.result
             
-            print(result.value.debugDescription)
-            
-            if let dict = result.value as? Dictionary< String, AnyObject> {
+            if let dict = result.value as? Dictionary<String, AnyObject> {
                 
-                //Get weight from API
-                if let weight = dict["weight"] as? Int {
-                    self._weight = "\(weight)"
-
+                if let weight = dict["weight"] as? String {
+                    self._weight = weight
                 }
                 
-                //Get height from API
-                if let height = dict["height"] as? Int {
-                    self._height = "\(height)"
+                if let height = dict["height"] as? String {
+                    self._height = height
                 }
                 
-                //Get Defense from API
-                if let stats = dict["stats"] as? [Dictionary<String, AnyObject>]{
-                    for stat in stats{
-                        print(stat)
-                        if let bStat = stat["base_stat"] as? Int{
-                            self._defense = "\(bStat)"
-                        }
-                        if let statistic = stat["stat"]{
-                            //print(statistic)
-                            if let defense = statistic["name"] as? String{
-                                if defense == "defense"{
-                                    //print("Hit!")
-                                    break
-                                }
-                            }
-                        }
-                    }
+                if let attack = dict["attack"] as? Int {
+                    self._attack = "\(attack)"
                 }
                 
-                //Get Attack from API
-                if let stats = dict["stats"] as? [Dictionary<String, AnyObject>]{
-                    for stat in stats{
-                        //print(stat)
-                        if let bStat = stat["base_stat"] as? Int{
-                            self._attack = "\(bStat)"
-                        }
-                        if let statistic = stat["stat"]{
-                            //print(statistic)
-                            if let attack = statistic["name"] as? String{
-                                if attack == "attack"{
-                                    //print("Hit!")
-                                    break
-                                }
-                            }
-                        }
-                    }
-                }
-                //Get Pokemon type out of API
-                if let types = dict["types"] as? [Dictionary<String, AnyObject>] where types.count > 0{
-                    //print(types.debugDescription)
-                    //Array to hold pokemon type(s)
-                    var arrayTypes = [String]()
-                    
-                    
-                    for element in types{
-                        if let kind = element["type"]{
-                            if let type = kind["name"] as? String{
-                                arrayTypes.append(type.capitalizedString)
-                            }
-                        }
-                    }
-                    
-                    //Assign first type
-                    self._type = arrayTypes[0]
-                    
-                    //Add secon type if any
-                    if types.count > 1 {
-                        print("Multiple Types")
-                        self._type! += "/\(arrayTypes[1])"
-                    }
+                if let defense = dict["defense"] as? Int {
+                    self._defense = "\(defense)"
                 }
                 
                 print(self._weight)
                 print(self._height)
                 print(self._attack)
                 print(self._defense)
+                
+                
+                //Get the type out of the API
+                if let types = dict["types"] as? [Dictionary<String, String>] where types.count > 0 {
+                    
+                    if let name = types[0]["name"] {
+                        self._type = name.capitalizedString
+                    }
+                    
+                    if types.count > 1 {
+                        
+                        for x in 1...types.count - 1{
+                            if let name = types[x]["name"]{
+                                self._type! += "/\(name.capitalizedString)"
+                            }
+                        }
+                    }
+                } else {
+                    self._type = ""
+                }
+                
                 print(self._type)
+                
+                //Get Description out of the API
+                if let descArray = dict["descriptions"] as? [Dictionary<String, String>] where descArray.count > 0 {
+                    //Grab the first element of the array
+                    if let url = descArray[0]["resource_uri"]{
+                        print(url)
+                        let nsurl = NSURL(string: "\(URL_BASE)\(url)")!
+                        print(nsurl)
+                        Alamofire.request(.GET, nsurl).responseJSON { response in
+                            let result = response.result
+                            
+                            if let descDict = result.value as? Dictionary<String, AnyObject> {
+                                if let description = descDict["description"] as? String{
+                                    self._description = description
+                                    print(self._description)
+                                }
+                            }
+                            
+                            completed()
+                        }
+                    }
+                }
+                
+                //Get Evolution info out of API
+                if let evolutions = dict["evolutions"] as? [Dictionary<String, AnyObject>] where evolutions.count > 0{
+                    //to refers to next evolution
+                    if let to = evolutions[0]["to"] as? String{
+                        
+                        //Can't support Mega-pokemon right now
+                        //but api still has mega data
+                        if to.rangeOfString("mega") == nil{
+                            if let uri  = evolutions[0]["resource_uri"] as? String{
+                                let newString = uri.stringByReplacingOccurrencesOfString("/api/v1/pokemon/", withString: "")
+                                let num = newString.stringByReplacingOccurrencesOfString("/", withString: "")
+                                self._nextEvolutionID = num
+                                self._nextEvolutionTxt = to
+                                
+                            }
+                            
+                        }
+                    }
+                    
+                    if let lvl = evolutions[0]["level"] as? Int{
+                        self._nextEvolutionLVL = "\(lvl)"
+                    }
+                }
+//                print(self._nextEvolutionLVL)
+//                print(self._nextEvolutionTxt)
+//                print(self._nextEvolutionID)
             }
-            
-            
             
         }
         

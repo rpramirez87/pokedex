@@ -29,16 +29,46 @@ class PokemonDetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         pokemonNameLbl.text = pokemon.name.capitalizedString
-        pokemonImg.image = UIImage(named: "\(pokemon.pokedexId)")
+        
+        let img = UIImage(named: "\(pokemon.pokedexId)")
+        pokemonImg.image = img
         pokedexIDLbl.text = "\(pokemon.pokedexId)"
         
-        pokemonCurrentEvol.image = UIImage(named: "\(pokemon.pokedexId)")
+        pokemonCurrentEvol.image = img
         pokemonNextEvol.image = UIImage(named: "\(pokemon.pokedexId + 1)")
         
         
         pokemon.downloadPokemonDetails { () -> () in
             //This will be called after download is done.
+            print("DID WE GET HERE!")
+            self.updateUI()
              
+        }
+    }
+    
+    func updateUI() {
+        pokemonTypeLbl.text = pokemon.type
+        pokemonDescLbl.text = pokemon.description
+        pokemonHeightLbl.text = pokemon.height
+        pokemonWeightLbl.text = pokemon.weight
+        pokemonBaseAttackLbl.text = pokemon.attack
+        pokemonDefenseLbl.text = pokemon.defense
+        
+        //Next-Evolution
+        if pokemon.nextEvolutionID == ""{
+            pokemonEvolutionDescLbl.text = "No Evolution"
+            pokemonNextEvol.hidden = true
+        }else{
+            pokemonNextEvol.hidden = false
+            pokemonNextEvol.image = UIImage(named: pokemon.nextEvolutionID)
+            
+            var str = "Evolution : \(pokemon.nextEvolutionTxt)"
+            
+            if pokemon.nextEvolutionLVL != "" {
+                str += " - LVL: \(pokemon.nextEvolutionLVL)"
+                
+            }
+            pokemonEvolutionDescLbl.text = str
         }
     }
     @IBAction func backButton(sender: AnyObject) {
